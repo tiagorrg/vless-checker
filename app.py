@@ -74,9 +74,11 @@ def stream_check():
             result = future.result()
             if result:
                 working.append(result)
-                yield f"data: {json.dumps({'type': 'found', 'msg': f'[{done}/{total}] ✅ {result[\"host\"]}:{result[\"port\"]} — {result[\"latency_ms\"]} мс'})}\n\n"
+                msg = f'[{done}/{total}] ✅ {result["host"]}:{result["port"]} — {result["latency_ms"]} мс'
+                yield "data: " + json.dumps({'type': 'found', 'msg': msg}) + "\n\n"
             else:
-                yield f"data: {json.dumps({'type': 'progress', 'msg': f'[{done}/{total}] ❌'})}\n\n"
+                msg = f'[{done}/{total}] ❌'
+                yield "data: " + json.dumps({'type': 'progress', 'msg': msg}) + "\n\n"
 
     working.sort(key=lambda x: x["latency_ms"])
 
