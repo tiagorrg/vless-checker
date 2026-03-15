@@ -14,18 +14,30 @@ MAX_WORKERS = 20
 TEST_TIMEOUT = 5
 MAX_LATENCY_MS = 2000
 
+COUNTRIES = {
+    "estonia":     ["estonia"],
+    "finland":     ["finland"],
+    "germany":     ["germany"],
+    "sweden":      ["sweden"],
+    "netherlands": ["netherlands"],
+}
 
-def fetch_keys(url, mode="black"):
+
+def fetch_keys(url):
     resp = requests.get(url, timeout=15)
     resp.raise_for_status()
     lines = resp.text.strip().splitlines()
-    keys = [line.strip() for line in lines if line.strip().startswith("vless://")]
+    return [line.strip() for line in lines if line.strip().startswith("vless://")]
 
+
+def filter_keys(keys, mode):
+    if mode in COUNTRIES:
+        keywords = COUNTRIES[mode]
+        return [k for k in keys if any(kw in k.lower() for kw in keywords)]
     if mode == "white":
-        keys = [k for k in keys if "russia" not in k.lower()]
-    elif mode == "russia":
-        keys = [k for k in keys if "russia" in k.lower()]
-
+        return [k for k in keys if "russia" not in k.lower()]
+    if mode == "russia":
+        return [k for k in keys if "russia" in k.lower()]
     return keys
 
 
@@ -61,17 +73,7 @@ def test_key(key):
     return None
 
 
-def check_mode(url, mode):
-    print(f"[{mode}] Загружаем ключи...")
-    try:
-        keys = fetch_keys(url, mode)
-    except Exception as e:
-        print(f"[{mode}] Ошибка загрузки: {e}")
-        return {"best": None, "top5": [], "total_working": 0, "total": 0}
-
-    total = len(keys)
-    print(f"[{mode}] Найдено {total} ключей, проверяем...")
-
+def check_mode(keys):
     working = []
     with ThreadPoolExecutor(max_workers=MAX_WORKERS) as executor:
         futures = {executor.submit(test_key, key): key for key in keys}
@@ -81,23 +83,39 @@ def check_mode(url, mode):
                 working.append(result)
 
     working.sort(key=lambda x: x["latency_ms"])
-    print(f"[{mode}] Рабочих: {len(working)}/{total}")
 
     return {
         "best": working[0]["key"] if working else None,
         "top5": working[:5],
         "total_working": len(working),
-        "total": total,
+        "total": len(keys),
     }
 
 
 def main():
+    print("Загружаем BLACK ключи...")
+    black_keys = fetch_keys(BLACK_URL)
+    print(f"Загружено {len(black_keys)} BLACK ключей")
+
+    print("Загружаем WHITE ключи...")
+    white_keys = fetch_keys(WHITE_URL)
+    print(f"Загружено {len(white_keys)} WHITE ключей")
+
     results = {
         "updated_at": datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M UTC"),
-        "black": check_mode(BLACK_URL, "black"),
-        "white": check_mode(WHITE_URL, "white"),
-        "russia": check_mode(WHITE_URL, "russia"),
     }
+
+    for country in COUNTRIES:
+        filtered = filter_keys(black_keys, country)
+        print(f"[{country}] {len(filtered)} ключей, проверяем...")
+        results[country] = check_mode(filtered)
+        print(f"[{country}] Рабочих: {results[country]['total_working']}/{results[country]['total']}")
+
+    for mode in ("white", "russia"):
+        filtered = filter_keys(white_keys, mode)
+        print(f"[{mode}] {len(filtered)} ключей, проверяем...")
+        results[mode] = check_mode(filtered)
+        print(f"[{mode}] Рабочих: {results[mode]['total_working']}/{results[mode]['total']}")
 
     os.makedirs("docs", exist_ok=True)
     with open("docs/keys.json", "w", encoding="utf-8") as f:

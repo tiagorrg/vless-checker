@@ -24,27 +24,71 @@
       text-align: center;
       color: #888;
       font-size: 0.85rem;
-      margin-bottom: 28px;
+      margin-bottom: 20px;
+    }
+    .github-link {
+      display: flex;
+      justify-content: center;
+      margin-bottom: 20px;
+    }
+    .github-link a {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      color: #666;
+      text-decoration: none;
+      font-size: 0.8rem;
+      border: 1px solid #2a2a35;
+      border-radius: 20px;
+      padding: 5px 14px;
+      transition: all 0.2s;
+    }
+    .github-link a:hover { color: #aaa; border-color: #444; }
+    .guide {
+      max-width: 640px;
+      margin: 0 auto 24px;
+      background: #1a1a22;
+      border: 1px solid #2a2a35;
+      border-radius: 14px;
+      padding: 16px 20px;
+    }
+    .guide h3 { font-size: 0.8rem; color: #555; margin-bottom: 10px; text-transform: uppercase; letter-spacing: 0.05em; }
+    .guide ol { padding-left: 18px; }
+    .guide li { font-size: 0.82rem; color: #777; margin-bottom: 6px; line-height: 1.5; }
+    .guide li span { color: #94a3b8; }
+    .section-label {
+      text-align: center;
+      font-size: 0.72rem;
+      color: #444;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      margin-bottom: 8px;
     }
     .tabs {
       display: flex;
       justify-content: center;
-      gap: 10px;
-      margin-bottom: 28px;
+      gap: 8px;
+      margin-bottom: 8px;
       flex-wrap: wrap;
     }
     .tab {
-      padding: 8px 20px;
+      padding: 7px 16px;
       border-radius: 20px;
       border: 1px solid #333;
       background: #1a1a22;
       color: #aaa;
       cursor: pointer;
-      font-size: 0.9rem;
+      font-size: 0.85rem;
       transition: all 0.2s;
     }
     .tab:hover { border-color: #555; color: #ddd; }
     .tab.active { background: #4f46e5; border-color: #4f46e5; color: #fff; }
+    .tabs-divider {
+      max-width: 640px;
+      margin: 16px auto;
+      border: none;
+      border-top: 1px solid #2a2a35;
+    }
     .card {
       max-width: 640px;
       margin: 0 auto 20px;
@@ -110,42 +154,6 @@
     }
     .top5-item .copy-small:hover { border-color: #555; color: #ccc; }
     .stats { text-align: center; color: #555; font-size: 0.8rem; margin-top: 10px; }
-    .updated {
-      text-align: center;
-      color: #444;
-      font-size: 0.75rem;
-      margin-top: 8px;
-    }
-    .github-link {
-      display: flex;
-      justify-content: center;
-      margin-bottom: 20px;
-    }
-    .github-link a {
-      display: flex;
-      align-items: center;
-      gap: 6px;
-      color: #666;
-      text-decoration: none;
-      font-size: 0.8rem;
-      border: 1px solid #2a2a35;
-      border-radius: 20px;
-      padding: 5px 14px;
-      transition: all 0.2s;
-    }
-    .github-link a:hover { color: #aaa; border-color: #444; }
-    .guide {
-      max-width: 640px;
-      margin: 0 auto 24px;
-      background: #1a1a22;
-      border: 1px solid #2a2a35;
-      border-radius: 14px;
-      padding: 16px 20px;
-    }
-    .guide h3 { font-size: 0.8rem; color: #555; margin-bottom: 10px; text-transform: uppercase; letter-spacing: 0.05em; }
-    .guide ol { padding-left: 18px; }
-    .guide li { font-size: 0.82rem; color: #777; margin-bottom: 6px; line-height: 1.5; }
-    .guide li span { color: #94a3b8; }
     .refresh-btn {
       display: block;
       margin: 0 auto 20px;
@@ -187,56 +195,72 @@
 <div class="guide">
   <h3>Как пользоваться</h3>
   <ol>
-    <li>Выбери режим: <span>Обычный VPN</span> — полный туннель, <span>Белые списки</span> — для работы всех заблокированных сайтов когда работают только VK, банки, OZON и MAX, <span>Россия</span> — через московские серверы</li>
+    <li>Выбери страну для <span>обычного VPN</span> — рекомендуются Эстония, Финляндия, Германия, Швеция, Нидерланды</li>
+    <li>Или выбери режим <span>Белые списки</span> / <span>Россия (Москва)</span> для туннелирования только заблокированных сайтов</li>
     <li>Нажми <span>Копировать</span> и вставь ключ в приложение (Hiddify, v2rayTUN, Streisand)</li>
-    <li>Ключи обновляются автоматически <span>каждые 30 минут</span> — если не работает, зайди позже</li>
+    <li>Ключи обновляются автоматически <span>каждые 30 минут</span></li>
   </ol>
 </div>
 
-<div class="tabs">
-  <button class="tab active" onclick="switchMode('black')">Обычный VPN</button>
-  <button class="tab" onclick="switchMode('white')">Белые списки</button>
-  <button class="tab" onclick="switchMode('russia')">Россия (Москва)</button>
+<p class="section-label">Обычный VPN — выбери страну</p>
+<div class="tabs" id="tabs-countries">
+  <button class="tab active" onclick="switchMode('estonia')">🇪🇪 Эстония</button>
+  <button class="tab" onclick="switchMode('finland')">🇫🇮 Финляндия</button>
+  <button class="tab" onclick="switchMode('germany')">🇩🇪 Германия</button>
+  <button class="tab" onclick="switchMode('sweden')">🇸🇪 Швеция</button>
+  <button class="tab" onclick="switchMode('netherlands')">🇳🇱 Нидерланды</button>
 </div>
 
-<button class="refresh-btn" onclick="loadData()">Обновить</button>
+<hr class="tabs-divider" />
 
-<div class="card" id="card-black">
-  <h2>Лучший ключ — Обычный VPN</h2>
-  <div class="key-box empty" id="key-black">Загрузка...</div>
-  <button class="copy-btn" id="btn-black" disabled onclick="copyKey('black')">Копировать</button>
-  <div class="top5" id="top5-black"></div>
-  <div class="stats" id="stats-black"></div>
+<p class="section-label">Белые списки</p>
+<div class="tabs" id="tabs-white">
+  <button class="tab" onclick="switchMode('white')">🌐 Белые списки</button>
+  <button class="tab" onclick="switchMode('russia')">🇷🇺 Россия (Москва)</button>
 </div>
 
-<div class="card" id="card-white" style="display:none">
-  <h2>Лучший ключ — Белые списки</h2>
-  <div class="key-box empty" id="key-white">Загрузка...</div>
-  <button class="copy-btn" id="btn-white" disabled onclick="copyKey('white')">Копировать</button>
-  <div class="top5" id="top5-white"></div>
-  <div class="stats" id="stats-white"></div>
-</div>
+<button class="refresh-btn" onclick="loadData()" style="margin-top:20px">Обновить</button>
 
-<div class="card" id="card-russia" style="display:none">
-  <h2>Лучший ключ — Россия (Москва)</h2>
-  <div class="key-box empty" id="key-russia">Загрузка...</div>
-  <button class="copy-btn" id="btn-russia" disabled onclick="copyKey('russia')">Копировать</button>
-  <div class="top5" id="top5-russia"></div>
-  <div class="stats" id="stats-russia"></div>
-</div>
+<div id="cards"></div>
 
 <script>
   const KEYS_URL = 'keys.json';
   let data = null;
-  let currentMode = 'black';
+
+  const MODES = [
+    { key: 'estonia',     label: '🇪🇪 Эстония' },
+    { key: 'finland',     label: '🇫🇮 Финляндия' },
+    { key: 'germany',     label: '🇩🇪 Германия' },
+    { key: 'sweden',      label: '🇸🇪 Швеция' },
+    { key: 'netherlands', label: '🇳🇱 Нидерланды' },
+    { key: 'white',       label: '🌐 Белые списки' },
+    { key: 'russia',      label: '🇷🇺 Россия (Москва)' },
+  ];
+
+  let currentMode = 'estonia';
+
+  function buildCards() {
+    const container = document.getElementById('cards');
+    container.innerHTML = MODES.map(m =>
+      '<div class="card" id="card-' + m.key + '" style="display:none">' +
+      '<h2>Лучший ключ — ' + m.label + '</h2>' +
+      '<div class="key-box empty" id="key-' + m.key + '">Загрузка...</div>' +
+      '<button class="copy-btn" id="btn-' + m.key + '" disabled onclick="copyKey(\'' + m.key + '\')">Копировать</button>' +
+      '<div class="top5" id="top5-' + m.key + '"></div>' +
+      '<div class="stats" id="stats-' + m.key + '"></div>' +
+      '</div>'
+    ).join('');
+    document.getElementById('card-' + currentMode).style.display = 'block';
+  }
 
   function switchMode(mode) {
     currentMode = mode;
-    document.querySelectorAll('.tab').forEach((t, i) => {
-      t.classList.toggle('active', ['black','white','russia'][i] === mode);
+    document.querySelectorAll('.tab').forEach(t => {
+      const onclick = t.getAttribute('onclick');
+      t.classList.toggle('active', onclick === "switchMode('" + mode + "')");
     });
-    ['black','white','russia'].forEach(m => {
-      document.getElementById('card-' + m).style.display = m === mode ? 'block' : 'none';
+    MODES.forEach(m => {
+      document.getElementById('card-' + m.key).style.display = m.key === mode ? 'block' : 'none';
     });
   }
 
@@ -254,11 +278,14 @@
 
   function renderAll() {
     document.getElementById('updated').textContent = 'Обновлено: ' + (data.updated_at || '—');
-    ['black','white','russia'].forEach(mode => render(mode));
+    MODES.forEach(m => {
+      if (data[m.key]) render(m.key);
+    });
   }
 
   function render(mode) {
     const d = data[mode];
+    if (!d) return;
     const keyEl = document.getElementById('key-' + mode);
     const btnEl = document.getElementById('btn-' + mode);
     const top5El = document.getElementById('top5-' + mode);
@@ -291,7 +318,7 @@
   }
 
   function encodeKey(key) {
-    return key.replace(/'/g, "\\'");
+    return key.replace(/\\/g, '\\\\').replace(/'/g, "\\'");
   }
 
   function copyKey(mode) {
@@ -307,6 +334,7 @@
     });
   }
 
+  buildCards();
   loadData();
 </script>
 </body>
