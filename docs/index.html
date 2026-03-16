@@ -179,6 +179,33 @@
       margin-right: 6px;
     }
     @keyframes spin { to { transform: rotate(360deg); } }
+    .collapsed-toggle {
+      display: none;
+      justify-content: center;
+      align-items: center;
+      gap: 6px;
+      margin: 4px auto 8px;
+      cursor: pointer;
+      font-size: 0.75rem;
+      color: #555;
+      background: none;
+      border: none;
+      padding: 4px 10px;
+    }
+    .collapsed-toggle:hover { color: #888; }
+    .collapsed-toggle svg {
+      transition: transform 0.25s;
+      flex-shrink: 0;
+    }
+    .collapsed-toggle.open svg { transform: rotate(180deg); }
+    .tabs-collapsed {
+      display: none;
+      justify-content: center;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin-bottom: 8px;
+    }
+    .tabs-collapsed.open { display: flex; }
     .badge-new {
       display: inline-block;
       background: #ca8a04;
@@ -225,6 +252,14 @@
   <button class="tab" onclick="switchMode('poland')">🇵🇱 Польша <span class="badge-new">NEW</span></button>
   <button class="tab" onclick="switchMode('other')">🌍 Остальные</button>
 </div>
+
+<button class="collapsed-toggle" id="collapsed-toggle" onclick="toggleCollapsed()">
+  <svg width="12" height="12" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <path d="M2 4l4 4 4-4" stroke="#666" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+  </svg>
+  <span id="collapsed-label">Нет ключей: ...</span>
+</button>
+<div class="tabs-collapsed" id="tabs-collapsed"></div>
 
 <hr class="tabs-divider" />
 
@@ -306,11 +341,40 @@
       } catch(e) {}
     }
     document.getElementById('updated').textContent = 'Обновлено: ' + displayTime;
+    const emptyTabs = [];
     MODES.forEach(m => {
       if (data[m.key]) render(m.key);
-      const tabBtn = document.querySelector('[onclick="switchMode(\'' + m.key + '\')"]');
-      if (tabBtn) tabBtn.disabled = !data[m.key] || data[m.key].total_working === 0;
+      const hasKeys = data[m.key] && data[m.key].total_working > 0;
+      const tabBtn = document.querySelector('#tabs-countries [onclick="switchMode(\'' + m.key + '\')"], #tabs-white [onclick="switchMode(\'' + m.key + '\')"]');
+      if (!tabBtn) return;
+      if (hasKeys) {
+        tabBtn.disabled = false;
+        tabBtn.style.display = '';
+      } else {
+        tabBtn.disabled = true;
+        tabBtn.style.display = 'none';
+        emptyTabs.push(tabBtn.cloneNode(true));
+      }
     });
+
+    const collapsed = document.getElementById('tabs-collapsed');
+    const toggle = document.getElementById('collapsed-toggle');
+    const label = document.getElementById('collapsed-label');
+    collapsed.innerHTML = '';
+    if (emptyTabs.length > 0) {
+      emptyTabs.forEach(btn => { btn.disabled = false; collapsed.appendChild(btn); });
+      label.textContent = 'Нет ключей: ' + emptyTabs.length;
+      toggle.style.display = 'flex';
+    } else {
+      toggle.style.display = 'none';
+    }
+  }
+
+  function toggleCollapsed() {
+    const toggle = document.getElementById('collapsed-toggle');
+    const collapsed = document.getElementById('tabs-collapsed');
+    toggle.classList.toggle('open');
+    collapsed.classList.toggle('open');
   }
 
   function render(mode) {
