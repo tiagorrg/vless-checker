@@ -250,7 +250,7 @@
   <button class="tab" onclick="switchMode('sweden')">🇸🇪 Швеция</button>
   <button class="tab" onclick="switchMode('netherlands')">🇳🇱 Нидерланды</button>
   <button class="tab" onclick="switchMode('poland')">🇵🇱 Польша <span class="badge-new">NEW</span></button>
-  <button class="tab" onclick="switchMode('other')">🌍 Остальные</button>
+  <button class="tab" onclick="switchMode('other')">🌍 Остальные <span class="badge-new">NEW</span></button>
 </div>
 
 <button class="collapsed-toggle" id="collapsed-toggle" onclick="toggleCollapsed()">
@@ -351,9 +351,12 @@
         tabBtn.disabled = false;
         tabBtn.style.display = '';
       } else {
+        const clone = tabBtn.cloneNode(true);
+        clone.disabled = false;
+        clone.style.display = '';
+        emptyTabs.push(clone);
         tabBtn.disabled = true;
         tabBtn.style.display = 'none';
-        emptyTabs.push(tabBtn.cloneNode(true));
       }
     });
 
