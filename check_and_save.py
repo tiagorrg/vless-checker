@@ -8,6 +8,7 @@ from datetime import datetime, timezone
 from concurrent.futures import ThreadPoolExecutor, as_completed
 
 BLACK_URL = "https://raw.githubusercontent.com/igareck/vpn-configs-for-russia/main/BLACK_VLESS_RUS.txt"
+BLACK_MOBILE_URL = "https://raw.githubusercontent.com/igareck/vpn-configs-for-russia/main/BLACK_VLESS_RUS_mobile.txt"
 WHITE_URL = "https://raw.githubusercontent.com/igareck/vpn-configs-for-russia/main/WHITE-CIDR-RU-checked.txt"
 
 MAX_WORKERS = 20
@@ -97,6 +98,12 @@ def main():
     print("Загружаем BLACK ключи...")
     black_keys = fetch_keys(BLACK_URL)
     print(f"Загружено {len(black_keys)} BLACK ключей")
+
+    print("Загружаем BLACK mobile ключи...")
+    black_mobile_keys = fetch_keys(BLACK_MOBILE_URL)
+    print(f"Загружено {len(black_mobile_keys)} BLACK mobile ключей")
+    black_keys = list(dict.fromkeys(black_keys + black_mobile_keys))
+    print(f"Итого уникальных BLACK ключей: {len(black_keys)}")
 
     print("Загружаем WHITE ключи...")
     white_keys = fetch_keys(WHITE_URL)
