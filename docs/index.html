@@ -295,9 +295,13 @@
     const utcStr = data.updated_at;
     let displayTime = utcStr || '—';
     if (utcStr) {
-      const d = new Date(utcStr.replace(' ', 'T'));
-      const msk = new Date(d.getTime() + 3 * 60 * 60 * 1000);
-      displayTime = msk.toISOString().slice(0, 16).replace('T', ' ') + ' МСК';
+      try {
+        const d = new Date(utcStr.replace(' ', 'T').replace(' UTC', 'Z'));
+        if (!isNaN(d)) {
+          const msk = new Date(d.getTime() + 3 * 60 * 60 * 1000);
+          displayTime = msk.toISOString().slice(0, 16).replace('T', ' ') + ' МСК';
+        }
+      } catch(e) {}
     }
     document.getElementById('updated').textContent = 'Обновлено: ' + displayTime;
     MODES.forEach(m => {
